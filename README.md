@@ -41,4 +41,3 @@
 - Each product can update product details using edit button.
 - Each product can remove from the list using delete button.
 - Product can find by searching product name.
-- Product data is stored in Local Storage.
