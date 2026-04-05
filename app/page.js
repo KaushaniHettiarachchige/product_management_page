@@ -5,7 +5,12 @@ import { Toaster, toast } from "react-hot-toast";
 import ProductForm from "../Components/ProductForm";
 import ProductList from "../Components/ProductList";
 import SearchBar from "../Components/SearchBar";
-import ThemeToggle from "../Components/ThemeToggle";
+import dynamic from "next/dynamic";
+import DeleteConfirmDialog from "../Components/DeleteConfirmDialog";
+
+const ThemeToggle = dynamic(() => import("../Components/ThemeToggle"), {
+  ssr: false,
+});
 
 export default function Home() {
   const [products, setProducts] = useState([]);
@@ -13,6 +18,9 @@ export default function Home() {
 
   const [searchTerm, setSearchTerm] = useState("");
   const [editId, setEditId] = useState(null);
+
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [productToDelete, setProductToDelete] = useState(null);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -170,20 +178,27 @@ export default function Home() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const handleDelete = (id) => {
-    const confirmDelete = window.confirm(
-      "Are you sure you want to delete this product?"
+  const handleDeleteClick = (product) => {
+    setProductToDelete(product);
+    setDeleteDialogOpen(true);
+  };
+
+  const confirmDelete = () => {
+    if (!productToDelete) return;
+
+    const updatedProducts = products.filter(
+      (product) => product.id !== productToDelete.id
     );
 
-    if (!confirmDelete) return;
-
-    const updatedProducts = products.filter((product) => product.id !== id);
     setProducts(updatedProducts);
-    toast.success("Product deleted successfully");
+    toast.success("Products deleted successfully");
 
-    if (editId === id) {
+    if (editId === productToDelete.id) {
       resetForm();
     }
+
+    setDeleteDialogOpen(false);
+    setProductToDelete(null);
   };
 
   const filteredProducts = useMemo(() => {
@@ -198,7 +213,7 @@ export default function Home() {
 
       <div className="max-w-6xl mx-auto">
         <div className="mb-8 text-center">
-          <h1 className="text-3xl md:text-4xl font-bold text-slate-100">
+          <h1 className="text-3xl md:text-4xl font-bold text-slate-800 dark:text-white">
             Product Management Dashboard
           </h1>
           <ThemeToggle />
@@ -219,7 +234,7 @@ export default function Home() {
           <ProductList
             products={filteredProducts}
             handleEdit={handleEdit}
-            handleDelete={handleDelete}
+            handleDelete={handleDeleteClick}
           />
         ) : (
           <div className="mt-8 bg-white dark:bg-slate-900 rounded-2xl shadow-md p-10 text-center text-slate-500 dark:text-slate-300">
@@ -227,6 +242,12 @@ export default function Home() {
           </div>
         )}
       </div>
+      <DeleteConfirmDialog
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        onConfirm={confirmDelete}
+        productName={productToDelete?.name}
+      />
     </main>
   );
 }

@@ -1,23 +1,10 @@
 "use client";
 
 import * as Switch from "@radix-ui/react-switch";
-import { useSyncExternalStore } from "react";
 import { useTheme } from "next-themes";
-
-function subscribe() {
-  return () => {};
-}
 
 export default function ThemeToggle() {
   const { theme, setTheme } = useTheme();
-
-  const isClient = useSyncExternalStore(
-    subscribe,
-    () => true,
-    () => false
-  );
-
-  if (!isClient) return null;
 
   const isDark = theme === "dark";
 

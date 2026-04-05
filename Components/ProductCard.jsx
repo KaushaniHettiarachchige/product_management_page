@@ -20,7 +20,7 @@ export default function ProductCard({ product, handleEdit, handleDelete }) {
           {product.name}
         </h3>
 
-        <p className="text-base font-bold text-slate-700 dark:text-slate-200 mb-2">
+        <p className="text-base font-bold text-slate-800 dark:text-slate-200 mb-2">
           LKR {Number(product.price).toLocaleString()}
         </p>
 
@@ -37,7 +37,7 @@ export default function ProductCard({ product, handleEdit, handleDelete }) {
           </button>
 
           <button
-            onClick={() => handleDelete(product.id)}
+            onClick={() => handleDelete(product)}
             className="bg-rose-600 hover:bg-rose-700 text-white px-6 py-1.5 rounded-lg text-xs font-medium transition"
           >
             Delete
